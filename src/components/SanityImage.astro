@@ -1,0 +1,25 @@
+---
+import { urlFor } from '../sanity/image';
+
+const { node } = Astro.props;
+
+const imageSource = node?.asset || node;
+const imgUrl = imageSource
+  ? urlFor(imageSource).width(1000).auto('format').url()
+  : null;
+
+const alt = node?.alt || '';
+const caption = node?.caption || '';
+---
+
+{imgUrl && (
+  <figure class="post-image">
+    <img
+      src={imgUrl}
+      alt={alt}
+      loading="lazy"
+      decoding="async"
+    />
+    {caption && <figcaption>{caption}</figcaption>}
+  </figure>
+)}

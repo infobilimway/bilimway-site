@@ -1,0 +1,142 @@
+---
+// BenefitsSection.astro
+---
+
+<section class="section section-surface" id="benefits">
+  <div class="container">
+    <div class="section-heading reveal">
+      <span class="eyebrow">Почему выбирают нас</span>
+      <!-- Добавлен класс js-typewriter -->
+      <h2 class="section-title js-typewriter">Надёжное сопровождение на каждом этапе</h2>
+      <p class="section-description" style="transition-delay: 0.4s;">
+        Мы не просто консультируем, а сопровождаем абитуриента от первой заявки
+        до поступления и адаптации.
+      </p>
+    </div>
+
+    <div class="grid grid-4 benefits-grid">
+      <article class="card benefit-card reveal" style="--reveal-delay: 0.1s;">
+        <div class="benefit-card__icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        </div>
+        <h3>5+ лет опыта</h3>
+        <p>Работаем с иностранными абитуриентами и знаем реальные процессы поступления.</p>
+      </article>
+
+      <article class="card benefit-card reveal" style="--reveal-delay: 0.2s;">
+        <div class="benefit-card__icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        </div>
+        <h3>Подбор вуза</h3>
+        <p>Помогаем выбрать университет и направление под цели, бюджет и интересы студента.</p>
+      </article>
+
+      <article class="card benefit-card reveal" style="--reveal-delay: 0.3s;">
+        <div class="benefit-card__icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+        </div>
+        <h3>Документы</h3>
+        <p>Сопровождаем сбор, оформление и подачу документов без лишнего стресса.</p>
+      </article>
+
+      <article class="card benefit-card reveal" style="--reveal-delay: 0.4s;">
+        <div class="benefit-card__icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h3>Поддержка 24/7</h3>
+        <p>Остаёмся на связи и помогаем на всех этапах общения и поступления.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<script>
+  (() => {
+    // Проверяем, не отключил ли пользователь анимации (Reduced Motion)
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    const typewriters = document.querySelectorAll('.js-typewriter');
+    
+    if (!typewriters.length) return;
+
+    // Функция печати одной строки
+    function typeText(el, text, speed) {
+      return new Promise((resolve) => {
+        let index = 0;
+        el.textContent = ''; // Очищаем
+
+        function step() {
+          if (index < text.length) {
+            el.textContent += text.charAt(index);
+            index += 1;
+            setTimeout(step, speed);
+          } else {
+            resolve();
+          }
+        }
+
+        step();
+      });
+    }
+
+    // Вспомогательная функция для паузы
+    function wait(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    // Бесконечный цикл для каждого элемента
+    async function runLoop(el, text) {
+      // Чтобы не скакала высота заголовка, пока он пустой, 
+      // зададим ему минимальную высоту (через min-height в CSS или невидимый символ).
+      // Здесь используем CSS-подход: высота сохраняется за счет контейнера.
+      
+      while (true) {
+        el.textContent = ''; // Стираем
+        
+        // Печатаем со скоростью 65мс на букву (это в 2 раза медленнее, чем было)
+        await typeText(el, text, 65);
+        
+        // Ждём 5 секунд
+        await wait(5000);
+        
+        // Быстро стираем перед следующим кругом (чтобы было видно, что начался новый цикл)
+        // Можно и не стирать побуквенно, а просто обнулить
+        el.textContent = '';
+        
+        // Пауза перед тем как снова начать писать
+        await wait(500); 
+      }
+    }
+
+    // Настраиваем IntersectionObserver, чтобы анимация запускалась только когда заголовок виден
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          // Если анимация для этого элемента еще не запущена
+          if (!el.hasAttribute('data-typing-started')) {
+            el.setAttribute('data-typing-started', 'true');
+            const text = el.getAttribute('data-text') || '';
+            el.style.opacity = '1';
+            
+            // Запускаем бесконечный цикл
+            runLoop(el, text);
+          }
+        }
+      });
+    }, { threshold: 0.1 });
+
+    // Инициализация
+    typewriters.forEach(tw => {
+      // Сохраняем текст
+      tw.setAttribute('data-text', tw.textContent?.trim() || '');
+      // Делаем невидимым символ пробела, чтобы высота H2 не схлопнулась до 0
+      tw.innerHTML = '&nbsp;';
+      tw.style.opacity = '0';
+      
+      // Начинаем следить
+      observer.observe(tw);
+    });
+  })();
+</script>

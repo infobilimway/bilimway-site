@@ -1,0 +1,151 @@
+---
+const { services } = Astro.props;
+const featuredServices = services.slice(0, 3);
+const [primaryService, ...secondaryServices] = featuredServices;
+---
+
+<section class="section section-surface" id="services">
+  <div class="container">
+    <div class="section-heading reveal">
+      <span class="eyebrow">Услуги</span>
+      <h2 class="section-title js-typewriter-services">Чем мы помогаем абитуриентам</h2>
+      <p class="section-description">
+        От первой консультации до подготовки документов — мы берём на себя ключевые этапы поступления.
+      </p>
+    </div>
+
+    <div class="services-showcase">
+      {primaryService && (
+        <article class="service-panel service-panel--hero-style reveal" style="--reveal-delay: 0.08s;">
+          <!-- Анимированный фон как в Hero -->
+          <div class="service-hero-bg">
+            <div class="service-hero-orbit"></div>
+            <div class="service-hero-glow"></div>
+          </div>
+
+          <div class="service-panel__content service-panel__content--featured">
+            <div class="service-panel__topline">
+              <span class="service-panel__tag">{primaryService.category || 'Комплексное сопровождение'}</span>
+              {primaryService.price && <span class="service-panel__price-badge">{primaryService.price}</span>}
+            </div>
+
+            <h3>{primaryService.title}</h3>
+            <p>{primaryService.shortDescription}</p>
+
+            <a
+              href={primaryService.slug?.current ? `/services/${primaryService.slug.current}` : '/services/'}
+              class="btn btn-secondary service-panel__button"
+            >
+              Подробнее
+            </a>
+          </div>
+
+          <!-- Декоративные парящие элементы как в Hero -->
+          <div class="service-floating-elements" aria-hidden="true">
+             <div class="service-float-card service-float-card--1">
+               <div class="s-dot"></div>
+               <div class="s-line"></div>
+               <div class="s-line short"></div>
+             </div>
+             <div class="service-float-card service-float-card--2">
+               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+             </div>
+          </div>
+        </article>
+      )}
+
+      <div class="service-panel-list">
+        {secondaryServices.map((service: any, index: number) => (
+          <article class="service-panel service-panel--compact reveal" style={`--reveal-delay: ${0.16 + index * 0.08}s;`}>
+            <div class="service-panel__topline">
+              <span class="service-panel__tag">{service.category || 'Услуга'}</span>
+            </div>
+
+            <div class="service-panel__content">
+              <h3>{service.title}</h3>
+              <p>{service.shortDescription}</p>
+
+              <div class="service-panel__footer">
+                {service.price && <strong>{service.price}</strong>}
+                <a
+                  href={service.slug?.current ? `/services/${service.slug.current}` : '/services/'}
+                  class="service-panel__link"
+                >
+                  Подробнее
+                </a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+
+    <div class="section-cta reveal" style="--reveal-delay: 0.35s;">
+      <a href="/services" class="btn btn-primary section-cta__button">
+        Перейти ко всем услугам
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  (() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    const typewriters = document.querySelectorAll('.js-typewriter-services');
+    if (!typewriters.length) return;
+
+    function typeText(el, text, speed) {
+      return new Promise((resolve) => {
+        let index = 0;
+        el.textContent = '';
+        function step() {
+          if (index < text.length) {
+            el.textContent += text.charAt(index);
+            index += 1;
+            setTimeout(step, speed);
+          } else {
+            resolve();
+          }
+        }
+        step();
+      });
+    }
+
+    function wait(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    async function runLoop(el, text) {
+      while (true) {
+        el.textContent = '';
+        await typeText(el, text, 65);
+        await wait(5000);
+        el.textContent = '';
+        await wait(450);
+      }
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          if (!el.hasAttribute('data-typing-started')) {
+            el.setAttribute('data-typing-started', 'true');
+            const text = el.getAttribute('data-text') || '';
+            el.style.opacity = '1';
+            runLoop(el, text);
+          }
+        }
+      });
+    }, { threshold: 0.15 });
+
+    typewriters.forEach((tw) => {
+      tw.setAttribute('data-text', tw.textContent?.trim() || '');
+      tw.innerHTML = '&nbsp;';
+      tw.style.opacity = '0';
+      observer.observe(tw);
+    });
+  })();
+</script>

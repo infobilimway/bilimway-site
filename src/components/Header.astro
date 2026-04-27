@@ -1,0 +1,92 @@
+---
+import { Image } from 'astro:assets';
+// Укажите правильный путь к вашему логотипу
+import logoImg from '../assets/image.png'; 
+---
+
+<header class="site-header" id="top">
+  <div class="container site-header__inner">
+    <!-- Логотип-картинка вместо текста -->
+    <a href="/" class="site-logo" aria-label="BilimWay International — Главная">
+      <Image 
+        src={logoImg} 
+        alt="BilimWay International" 
+        class="site-logo__image"
+        width={140}
+        height={48}
+        quality="high"
+      />
+    </a>
+
+    <nav class="site-nav" aria-label="Основная навигация">
+      <a href="/">Главная</a>
+      <a href="/universities">Университеты</a>
+      <a href="/services">Услуги</a>
+      <a href="/posts">Посты</a>
+      <a href="/about">О нас</a>
+      <a href="/contacts">Контакты</a>
+    </nav>
+
+    <div class="site-header__actions">
+      <button class="btn btn-secondary js-open-lead-modal" type="button">
+        Оставить заявку
+      </button>
+
+      <button
+        class="burger"
+        type="button"
+        aria-label="Открыть меню"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        data-burger
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile-menu" id="mobile-menu" data-mobile-menu hidden>
+    <div class="container mobile-menu__inner">
+      <nav class="mobile-menu__nav" aria-label="Мобильная навигация">
+        <a href="/">Главная</a>
+        <a href="/universities">Университеты</a>
+        <a href="/services">Услуги</a>
+        <a href="/posts">Посты</a>
+        <a href="/about">О нас</a>
+        <a href="/contacts">Контакты</a>
+      </nav>
+
+      <button class="btn btn-secondary js-open-lead-modal" type="button">
+        Подать заявку
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const burger = document.querySelector('[data-burger]');
+  const mobileMenu = document.querySelector('[data-mobile-menu]');
+
+  if (burger && mobileMenu) {
+    burger.addEventListener('click', () => {
+      const isOpen = burger.getAttribute('aria-expanded') === 'true';
+      burger.setAttribute('aria-expanded', String(!isOpen));
+      burger.classList.toggle('is-active');
+      mobileMenu.toggleAttribute('hidden');
+      mobileMenu.classList.toggle('is-open');
+      document.body.classList.toggle('menu-open');
+    });
+
+    mobileMenu.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        burger.setAttribute('aria-expanded', 'false');
+        burger.classList.remove('is-active');
+        mobileMenu.setAttribute('hidden', '');
+        mobileMenu.classList.remove('is-open');
+        document.body.classList.remove('menu-open');
+      });
+    });
+  }
+</script>

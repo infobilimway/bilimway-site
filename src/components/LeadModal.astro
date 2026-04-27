@@ -1,0 +1,412 @@
+---
+import { sanityClient } from 'sanity:client';
+
+const query = `*[_type == "university"] | order(name asc) {
+  name,
+  abbr
+}`;
+
+const universities = await sanityClient.fetch(query);
+---
+
+<div class="lead-modal" id="lead-modal" hidden>
+  <div class="lead-modal__overlay" id="lead-modal-overlay"></div>
+
+  <div
+    class="lead-modal__dialog"
+    id="lead-modal-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="lead-modal-title"
+  >
+    <button
+      class="lead-modal__close"
+      type="button"
+      aria-label="Закрыть форму"
+      id="lead-modal-close"
+    >
+      ×
+    </button>
+
+    <div class="lead-modal__content">
+      <div class="lead-modal__intro">
+        <span class="eyebrow">BilimWay International</span>
+        <h2 id="lead-modal-title">Оставьте заявку</h2>
+        <p>Подберём университет и подскажем все следующие шаги поступления.</p>
+      </div>
+
+      <form class="lead-form" id="lead-form" novalidate>
+        <input type="hidden" name="service" id="lead-service" />
+
+        <div class="lead-form__grid">
+          <label class="lead-form__field">
+            <span>Имя и фамилия *</span>
+            <input type="text" name="name" placeholder="Введите имя" required />
+            <small id="lead-error-name"></small>
+          </label>
+
+          <label class="lead-form__field">
+            <span>Гражданство *</span>
+            <input
+              type="text"
+              name="citizenship"
+              placeholder="Например, Туркменистан"
+              required
+            />
+            <small id="lead-error-citizenship"></small>
+          </label>
+
+          <label class="lead-form__field">
+            <span>Email *</span>
+            <input type="email" name="email" placeholder="example@mail.com" required />
+            <small id="lead-error-email"></small>
+          </label>
+
+          <label class="lead-form__field">
+            <span>Телефон</span>
+            <input type="text" name="phone" placeholder="+375 ..." />
+            <small id="lead-error-phone"></small>
+          </label>
+
+          <div class="lead-form__field lead-form__field--full">
+            <span>Интересующий университет</span>
+
+            <div class="custom-select" id="lead-select">
+              <input type="hidden" name="targetUniversity" id="lead-select-value" />
+
+              <button
+                type="button"
+                class="custom-select__trigger"
+                id="lead-select-trigger"
+                aria-expanded="false"
+              >
+                <span id="lead-select-label">Выберите университет</span>
+                <span class="custom-select__arrow"></span>
+              </button>
+
+              <div class="custom-select__dropdown" id="lead-select-dropdown" hidden>
+                <button type="button" class="custom-select__option" data-value="">
+                  Выберите университет
+                </button>
+
+                {universities.map((uni) => (
+                  <button
+                    type="button"
+                    class="custom-select__option"
+                    data-value={uni.name}
+                  >
+                    {uni.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <small id="lead-error-targetUniversity"></small>
+          </div>
+
+          <label class="lead-form__field lead-form__field--full">
+            <span>Комментарий</span>
+            <textarea
+              name="comment"
+              rows="3"
+              placeholder="Коротко напишите, что вас интересует"
+            ></textarea>
+            <small id="lead-error-comment"></small>
+          </label>
+        </div>
+
+        <div class="lead-form__actions">
+          <button type="submit" class="btn btn-secondary" id="lead-submit-button">
+            Отправить заявку
+          </button>
+          <p class="lead-form__status" id="lead-form-status"></p>
+        </div>
+      </form>
+
+      <div class="lead-success" id="lead-success" hidden>
+        <div class="lead-success__icon">✓</div>
+        <h3>Заявка отправлена</h3>
+        <p>Спасибо. Мы скоро свяжемся с вами.</p>
+        <button class="btn btn-primary" type="button" id="lead-success-close">
+          Закрыть
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function setupLeadModal() {
+    const modal = document.getElementById('lead-modal');
+    if (!modal || modal.dataset.ready === 'true') return;
+
+    modal.dataset.ready = 'true';
+
+    const overlay = document.getElementById('lead-modal-overlay');
+    const dialog = document.getElementById('lead-modal-dialog');
+    const closeButton = document.getElementById('lead-modal-close');
+    const successCloseButton = document.getElementById('lead-success-close');
+    const form = document.getElementById('lead-form');
+    const successBlock = document.getElementById('lead-success');
+    const status = document.getElementById('lead-form-status');
+    const submitButton = document.getElementById('lead-submit-button');
+    const firstInput = form ? form.querySelector('input[name="name"]') : null;
+
+    const select = document.getElementById('lead-select');
+    const selectTrigger = document.getElementById('lead-select-trigger');
+    const selectDropdown = document.getElementById('lead-select-dropdown');
+    const selectValue = document.getElementById('lead-select-value');
+    const selectLabel = document.getElementById('lead-select-label');
+
+    const serviceInput = document.getElementById('lead-service');
+    const openButtons = document.querySelectorAll('.js-open-lead-modal');
+
+    function getSelectOptions() {
+      return modal.querySelectorAll('.custom-select__option');
+    }
+
+    function openModal(serviceName = '') {
+      modal.hidden = false;
+      document.body.classList.add('modal-open');
+
+      if (serviceInput) {
+        serviceInput.value = serviceName || '';
+      }
+
+      if (form) form.hidden = false;
+      if (successBlock) successBlock.hidden = true;
+      if (status) status.textContent = '';
+
+      setTimeout(function () {
+        if (firstInput) firstInput.focus();
+      }, 50);
+    }
+
+    function closeModal() {
+      closeSelect();
+      modal.hidden = true;
+      document.body.classList.remove('modal-open');
+      if (status) status.textContent = '';
+    }
+
+    function openSelect() {
+      if (!select || !selectTrigger || !selectDropdown) return;
+      select.classList.add('is-open');
+      selectDropdown.hidden = false;
+
+      requestAnimationFrame(function () {
+        selectDropdown.classList.add('is-visible');
+      });
+
+      selectTrigger.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeSelect() {
+      if (!select || !selectTrigger || !selectDropdown) return;
+      select.classList.remove('is-open');
+      selectDropdown.classList.remove('is-visible');
+      selectTrigger.setAttribute('aria-expanded', 'false');
+
+      setTimeout(function () {
+        if (!select.classList.contains('is-open')) {
+          selectDropdown.hidden = true;
+        }
+      }, 180);
+    }
+
+    function toggleSelect() {
+      if (select && select.classList.contains('is-open')) {
+        closeSelect();
+      } else {
+        openSelect();
+      }
+    }
+
+    openButtons.forEach(function (button) {
+      button.addEventListener('click', function (event) {
+        event.preventDefault();
+        const service = button.getAttribute('data-service') || '';
+        openModal(service);
+      });
+    });
+
+    if (closeButton) {
+      closeButton.addEventListener('click', function (event) {
+        event.preventDefault();
+        closeModal();
+      });
+    }
+
+    if (successCloseButton) {
+      successCloseButton.addEventListener('click', function (event) {
+        event.preventDefault();
+        closeModal();
+      });
+    }
+
+    if (overlay) {
+      overlay.addEventListener('click', function (event) {
+        event.preventDefault();
+        closeModal();
+      });
+    }
+
+    if (dialog) {
+      dialog.addEventListener('click', function (event) {
+        event.stopPropagation();
+      });
+    }
+
+    modal.addEventListener('click', function (event) {
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && !modal.hidden) {
+        if (select && select.classList.contains('is-open')) {
+          closeSelect();
+          return;
+        }
+        closeModal();
+      }
+    });
+
+    if (selectTrigger) {
+      selectTrigger.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        toggleSelect();
+      });
+    }
+
+    getSelectOptions().forEach(function (option) {
+      option.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const value = option.getAttribute('data-value') || '';
+        const label = option.textContent ? option.textContent.trim() : 'Выберите университет';
+
+        if (selectValue) selectValue.value = value;
+        if (selectLabel) selectLabel.textContent = label;
+
+        closeSelect();
+      });
+    });
+
+    document.addEventListener('click', function (event) {
+      if (select && !select.contains(event.target)) {
+        closeSelect();
+      }
+    });
+
+    setTimeout(function () {
+      if (modal.hidden) {
+      }
+    }, 6000);
+
+    if (form) {
+      form.addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(form);
+        const payload = Object.fromEntries(formData.entries());
+        payload.sourcePage = window.location.pathname;
+
+        const errors = {
+          name: '',
+          citizenship: '',
+          email: ''
+        };
+
+        if (!payload.name || !String(payload.name).trim()) {
+          errors.name = 'Введите имя и фамилию';
+        }
+
+        if (!payload.citizenship || !String(payload.citizenship).trim()) {
+          errors.citizenship = 'Укажите гражданство';
+        }
+
+        if (!payload.email || !String(payload.email).trim()) {
+          errors.email = 'Введите email';
+        }
+
+        const nameError = document.getElementById('lead-error-name');
+        const citizenshipError = document.getElementById('lead-error-citizenship');
+        const emailError = document.getElementById('lead-error-email');
+
+        if (nameError) nameError.textContent = errors.name;
+        if (citizenshipError) citizenshipError.textContent = errors.citizenship;
+        if (emailError) emailError.textContent = errors.email;
+
+        if (errors.name || errors.citizenship || errors.email) {
+          if (status) status.textContent = 'Проверьте обязательные поля';
+          return;
+        }
+
+        if (status) status.textContent = '';
+
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.textContent = 'Отправка...';
+        }
+
+        try {
+          const response = await fetch('/api/leads', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          const rawText = await response.text();
+
+          if (!rawText) {
+            throw new Error('Пустой ответ от сервера');
+          }
+
+          let result;
+
+          try {
+            result = JSON.parse(rawText);
+          } catch (parseError) {
+            throw new Error('Сервер вернул невалидный JSON: ' + rawText);
+          }
+
+          if (!response.ok) {
+            throw new Error(result && result.message ? result.message : 'Ошибка отправки формы');
+          }
+
+          form.reset();
+
+          if (selectValue) selectValue.value = '';
+          if (selectLabel) selectLabel.textContent = 'Выберите университет';
+          if (serviceInput) serviceInput.value = '';
+
+          form.hidden = true;
+          if (successBlock) successBlock.hidden = false;
+        } catch (error) {
+          if (status) {
+            status.textContent = error instanceof Error
+              ? error.message
+              : 'Не удалось отправить заявку';
+          }
+        } finally {
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Отправить заявку';
+          }
+        }
+      });
+    }
+
+    window.openLeadModal = openModal;
+    window.closeLeadModal = closeModal;
+  }
+
+  setupLeadModal();
+  document.addEventListener('astro:after-swap', setupLeadModal);
+</script>

@@ -1,5 +1,17 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import { loadEnv } from 'vite';
+import sanity from '@sanity/astro';
 
-// https://astro.build/config
-export default defineConfig({});
+const env = loadEnv(process.env.NODE_ENV || 'development', process.cwd(), '');
+
+export default defineConfig({
+  integrations: [
+    sanity({
+      projectId: env.PUBLIC_SANITY_PROJECT_ID,
+      dataset: env.PUBLIC_SANITY_DATASET,
+      apiVersion: env.SANITY_API_VERSION || '2026-03-01',
+      useCdn: false,
+    }),
+  ],
+});

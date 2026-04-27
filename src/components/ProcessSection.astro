@@ -1,0 +1,117 @@
+---
+// ProcessSection.astro
+---
+
+<section class="section" id="process">
+  <div class="container">
+    <div class="section-heading reveal">
+      <span class="eyebrow">Как проходит поступление</span>
+      <h2 class="section-title js-typewriter-process">Понятный путь от заявки до зачисления</h2>
+      <p class="section-description">
+        Мы выстроили понятный и спокойный процесс, чтобы абитуриент понимал каждый следующий шаг.
+      </p>
+    </div>
+
+    <div class="grid grid-3 process-grid">
+      <article class="card process-card reveal" style="--reveal-delay: 0.05s;">
+        <span class="process-card__number">01</span>
+        <h3>Заявка</h3>
+        <p>Вы оставляете заявку и рассказываете, что вас интересует.</p>
+      </article>
+
+      <article class="card process-card reveal" style="--reveal-delay: 0.10s;">
+        <span class="process-card__number">02</span>
+        <h3>Консультация</h3>
+        <p>Мы уточняем цели, бюджет, страну и подходящие направления обучения.</p>
+      </article>
+
+      <article class="card process-card reveal" style="--reveal-delay: 0.15s;">
+        <span class="process-card__number">03</span>
+        <h3>Подбор вуза</h3>
+        <p>Предлагаем университеты и программы, которые вам подходят.</p>
+      </article>
+
+      <article class="card process-card reveal" style="--reveal-delay: 0.20s;">
+        <span class="process-card__number">04</span>
+        <h3>Документы</h3>
+        <p>Помогаем собрать, проверить и оформить пакет документов.</p>
+      </article>
+
+      <article class="card process-card reveal" style="--reveal-delay: 0.25s;">
+        <span class="process-card__number">05</span>
+        <h3>Приглашение</h3>
+        <p>Сопровождаем процесс подачи и получения приглашения.</p>
+      </article>
+
+      <article class="card process-card reveal" style="--reveal-delay: 0.30s;">
+        <span class="process-card__number">06</span>
+        <h3>Поступление</h3>
+        <p>Поддерживаем до приезда, подачи документов и финального зачисления.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<script>
+  (() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    const typewriters = document.querySelectorAll('.js-typewriter-process');
+    if (!typewriters.length) return;
+
+    function typeText(el, text, speed) {
+      return new Promise((resolve) => {
+        let index = 0;
+        el.textContent = '';
+
+        function step() {
+          if (index < text.length) {
+            el.textContent += text.charAt(index);
+            index += 1;
+            setTimeout(step, speed);
+          } else {
+            resolve();
+          }
+        }
+
+        step();
+      });
+    }
+
+    function wait(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    async function runLoop(el, text) {
+      while (true) {
+        el.textContent = '';
+        await typeText(el, text, 65);
+        await wait(5000);
+        el.textContent = '';
+        await wait(450);
+      }
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          if (!el.hasAttribute('data-typing-started')) {
+            el.setAttribute('data-typing-started', 'true');
+            const text = el.getAttribute('data-text') || '';
+            el.style.opacity = '1';
+            runLoop(el, text);
+          }
+        }
+      });
+    }, { threshold: 0.15 });
+
+    typewriters.forEach((tw) => {
+      tw.setAttribute('data-text', tw.textContent?.trim() || '');
+      tw.innerHTML = '&nbsp;';
+      tw.style.opacity = '0';
+      observer.observe(tw);
+    });
+  })();
+</script>

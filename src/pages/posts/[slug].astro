@@ -1,0 +1,140 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import LeadModal from '../../components/LeadModal.astro';
+import PortableTextContent from '../../components/PortableTextContent.astro';
+
+import { sanityClient } from 'sanity:client';
+import { urlFor } from '../../sanity/image';
+
+export async function getStaticPaths() {
+  const query = `*[_type == "post" && defined(slug.current)]{
+    _id,
+    title,
+    "slug": slug.current,
+    excerpt,
+    publishedAt,
+    coverImage{
+      ...,
+      asset->,
+      alt
+    },
+    content[]{
+      ...,
+      _type == "image" => {
+        ...,
+        asset->,
+        alt,
+        caption
+      }
+    }
+  }`;
+
+  const posts = await sanityClient.fetch(query);
+
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+
+const coverUrl = post?.coverImage?.asset
+  ? urlFor(post.coverImage).width(1200).height(650).fit('crop').auto('format').url()
+  : null;
+
+const coverAlt = post?.coverImage?.alt || post?.title || '';
+const hasContent = Array.isArray(post?.content) && post.content.length > 0;
+---
+
+<BaseLayout
+  title={`${post.title} — BilimWay`}
+  description={post.excerpt || 'Статья от BilimWay'}
+>
+  <Header />
+
+  <main class="site-main uni-single">
+    <div class="container">
+      <header class="uni-single__header">
+        <div class="uni-single__breadcrumbs">
+          <a href="/">Главная</a>
+          <span class="sep">/</span>
+          <a href="/posts">Статьи</a>
+          <span class="sep">/</span>
+          <span class="current">{post.title}</span>
+        </div>
+
+        <div class="uni-single__title-wrap">
+          <h1 class="uni-single__title">{post.title}</h1>
+        </div>
+      </header>
+
+      <div class="uni-single__layout">
+        <article class="uni-single__content">
+          {coverUrl && (
+            <div class="uni-single__cover">
+              <img src={coverUrl} alt={coverAlt} loading="eager" />
+            </div>
+          )}
+
+          <div class="uni-single__prose">
+            {post.excerpt && (
+              <p class="uni-single__lead">
+                <strong>{post.excerpt}</strong>
+              </p>
+            )}
+
+            <div class="post-body prose">
+              {hasContent ? (
+                <PortableTextContent value={post.content} />
+              ) : (
+                <p>Контент статьи пока не добавлен.</p>
+              )}
+            </div>
+          </div>
+        </article>
+
+        <aside class="uni-single__sidebar">
+          <div class="uni-single__widget">
+            <div class="uni-single__widget-head">
+              <h3>Нужна помощь с поступлением?</h3>
+              <p>Свяжитесь с BilimWay и получите консультацию по вашей ситуации.</p>
+            </div>
+
+            <div class="uni-single__widget-action">
+              <button class="btn btn-primary btn-block js-open-lead-modal" type="button">
+                Оставить заявку
+              </button>
+              <p class="note">
+                Заполните короткую форму — мы свяжемся с вами и подскажем, как лучше действовать.
+              </p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <section class="uni-cta">
+      <div class="container">
+        <div class="uni-cta__box">
+          <div class="uni-cta__glow" aria-hidden="true"></div>
+          <div class="uni-cta__content">
+            <h2>Готовы обсудить ваше поступление?</h2>
+            <p>
+              Оставьте заявку, и мы свяжемся с вами, чтобы бесплатно ответить на вопросы
+              по университетам, специальностям и документам.
+            </p>
+            <button class="btn btn-primary js-open-lead-modal" type="button">
+              Получить консультацию
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+  <LeadModal />
+</BaseLayout>

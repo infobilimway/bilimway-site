@@ -1,0 +1,128 @@
+---
+const { universities } = Astro.props;
+const featuredUniversities = universities.slice(0, 3);
+---
+
+<section class="section" id="universities">
+  <div class="container">
+    <div class="section-heading reveal">
+      <span class="eyebrow">Университеты</span>
+      <h2 class="section-title js-typewriter-universities">Популярные университеты</h2>
+      <p class="section-description">
+        Подобрали для вас популярные университеты Беларуси, которые часто выбирают иностранные абитуриенты.
+      </p>
+    </div>
+
+    <div class="grid grid-3 cards-grid university-grid">
+      {featuredUniversities.map((university: any, index: number) => (
+        <article class="card university-card reveal" style={`--reveal-delay: ${0.08 * (index + 1)}s;`}>
+          <div class="university-card__image">
+            {university.coverImage?.asset?.url ? (
+              <img
+                src={university.coverImage.asset.url}
+                alt={university.coverImage.alt || university.name}
+                loading="lazy"
+              />
+            ) : (
+              <div class="university-card__placeholder">{university.name}</div>
+            )}
+          </div>
+
+          <div class="university-card__body">
+            <div class="university-card__meta">
+              <span>{university.city}</span>
+              <span>{university.country}</span>
+            </div>
+
+            <h3>{university.name}</h3>
+            <p>{university.shortDescription}</p>
+
+            {university.tuitionFrom && (
+        <div class="university-card__price">
+            <span>Стоимость</span>
+            <strong>{university.tuitionFrom}</strong>
+        </div>
+        )}
+
+        <a
+  href={university.slug?.current ? `/universities/${university.slug.current}` : '/universities/'}
+  class="btn btn-outline university-card__button"
+>
+  Подробнее
+</a>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <div class="section-cta reveal" style="--reveal-delay: 0.35s;">
+      <a href="/universities" class="btn btn-primary section-cta__button">
+        Перейти ко всем университетам
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  (() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    const typewriters = document.querySelectorAll('.js-typewriter-universities');
+    if (!typewriters.length) return;
+
+    function typeText(el, text, speed) {
+      return new Promise((resolve) => {
+        let index = 0;
+        el.textContent = '';
+
+        function step() {
+          if (index < text.length) {
+            el.textContent += text.charAt(index);
+            index += 1;
+            setTimeout(step, speed);
+          } else {
+            resolve();
+          }
+        }
+
+        step();
+      });
+    }
+
+    function wait(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    async function runLoop(el, text) {
+      while (true) {
+        el.textContent = '';
+        await typeText(el, text, 65);
+        await wait(5000);
+        el.textContent = '';
+        await wait(450);
+      }
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          if (!el.hasAttribute('data-typing-started')) {
+            el.setAttribute('data-typing-started', 'true');
+            const text = el.getAttribute('data-text') || '';
+            el.style.opacity = '1';
+            runLoop(el, text);
+          }
+        }
+      });
+    }, { threshold: 0.15 });
+
+    typewriters.forEach((tw) => {
+      tw.setAttribute('data-text', tw.textContent?.trim() || '');
+      tw.innerHTML = '&nbsp;';
+      tw.style.opacity = '0';
+      observer.observe(tw);
+    });
+  })();
+</script>

@@ -1,0 +1,448 @@
+---
+interface Review {
+  _id: string;
+  name: string;
+  role?: string;
+  message: string;
+  rating?: number;
+}
+
+const { approvedReviews = [] } = Astro.props;
+---
+
+<section class="reviews-section section-space" id="reviews">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow">Отзывы</div>
+      <h2 class="section-title">Что говорят клиенты</h2>
+      <p class="section-text">
+        Каждый отзыв сначала проходит модерацию, а после проверки публикуется на сайте.
+      </p>
+    </div>
+
+    <div class="testimonials-wrap reveal">
+      {approvedReviews.length > 0 ? (
+        <>
+          <div class="testimonials-slider">
+            <button
+              class="slider-btn slider-btn--prev"
+              type="button"
+              aria-label="Предыдущие отзывы"
+              data-slider-prev
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m15 6-6 6 6 6"></path>
+              </svg>
+            </button>
+
+            <div class="testimonials-viewport">
+              <div class="testimonials-track" data-slider-track>
+                {approvedReviews.map((review: Review) => (
+                  <article class="testimonial-card">
+                    <div class="testimonial-card__quote">“</div>
+
+                    <div
+                      class="testimonial-card__stars"
+                      aria-label={`${review.rating || 5} из 5`}
+                    >
+                      {Array.from({ length: 5 }).map((_, index) => (
+                        <span class={index < (review.rating || 5) ? 'is-filled' : ''}>★</span>
+                      ))}
+                    </div>
+
+                    <p>{review.message}</p>
+
+                    <div class="testimonial-card__author">
+                      <strong>{review.name}</strong>
+                      {review.role && <span>{review.role}</span>}
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+
+            <button
+              class="slider-btn slider-btn--next"
+              type="button"
+              aria-label="Следующие отзывы"
+              data-slider-next
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m9 6 6 6-6 6"></path>
+              </svg>
+            </button>
+          </div>
+
+          <div class="testimonials-dots" data-slider-dots></div>
+        </>
+      ) : (
+        <div class="testimonials-empty">
+          Пока опубликованных отзывов нет. Вы можете оставить первый отзыв через форму ниже.
+        </div>
+      )}
+
+      <div class="testimonial-actions">
+        <button
+          type="button"
+          class="btn btn-primary testimonials-open-btn"
+          data-open-review-modal
+        >
+          Оставить отзыв
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="lead-modal review-modal" id="review-modal" aria-hidden="true">
+  <div class="lead-modal__overlay" data-close-review-modal></div>
+
+  <div
+    class="lead-modal__dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="review-modal-title"
+  >
+    <button
+      type="button"
+      class="lead-modal__close"
+      data-close-review-modal
+      aria-label="Закрыть окно"
+    >
+      ✕
+    </button>
+
+    <div class="lead-modal__content">
+      <div class="lead-modal__intro" id="review-modal-intro">
+        <div class="eyebrow">Отзывы</div>
+        <h2 id="review-modal-title">Оставить отзыв</h2>
+        <p>Расскажите кратко о своём опыте. После проверки отзыв появится на сайте.</p>
+      </div>
+
+      <form id="review-form" class="lead-form review-form">
+        <div class="lead-form__grid">
+          <div class="lead-form__field">
+            <span>Имя</span>
+            <input
+              id="review-name"
+              name="name"
+              type="text"
+              required
+              placeholder="Ваше имя"
+            />
+          </div>
+
+          <div class="lead-form__field">
+            <span>E-mail</span>
+            <input
+              id="review-email"
+              name="email"
+              type="email"
+              required
+              placeholder="Ваш e-mail"
+            />
+          </div>
+
+          <div class="lead-form__field lead-form__field--full">
+            <span>Страна / статус</span>
+            <input
+              id="review-role"
+              name="role"
+              type="text"
+              placeholder="Например: студент из Узбекистана"
+            />
+          </div>
+
+          <div class="lead-form__field lead-form__field--full">
+            <span>Оценка</span>
+            <fieldset class="review-rating">
+              <legend class="sr-only">Оценка</legend>
+
+              <div class="review-rating__stars">
+                <input type="radio" id="rating-5" name="rating" value="5" required />
+                <label for="rating-5" title="5 звёзд">★</label>
+
+                <input type="radio" id="rating-4" name="rating" value="4" />
+                <label for="rating-4" title="4 звезды">★</label>
+
+                <input type="radio" id="rating-3" name="rating" value="3" />
+                <label for="rating-3" title="3 звезды">★</label>
+
+                <input type="radio" id="rating-2" name="rating" value="2" />
+                <label for="rating-2" title="2 звезды">★</label>
+
+                <input type="radio" id="rating-1" name="rating" value="1" />
+                <label for="rating-1" title="1 звезда">★</label>
+              </div>
+            </fieldset>
+          </div>
+
+          <div class="lead-form__field lead-form__field--full">
+            <span>Ваш отзыв</span>
+            <textarea
+              id="review-message"
+              name="message"
+              required
+              placeholder="Напишите ваш отзыв"
+            ></textarea>
+          </div>
+
+          <div class="lead-form__field lead-form__field--full">
+            <label class="review-check">
+              <input type="checkbox" name="approve" required />
+              <span>Согласен(на) на обработку данных и публикацию отзыва после модерации</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="lead-form__actions">
+          <button type="submit" class="btn btn-primary review-submit-btn">
+            Отправить отзыв
+          </button>
+        </div>
+      </form>
+
+      <div id="review-success" class="lead-success" hidden>
+        <div class="lead-success__icon">✓</div>
+        <h3>Спасибо!</h3>
+        <p>Ваш отзыв отправлен на модерацию.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<link rel="stylesheet" href="/styles/reviews.css" />
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Reveal-анимация
+    const revealItems = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          }
+        });
+      },
+      { threshold: 0.14 }
+    );
+    revealItems.forEach((item) => revealObserver.observe(item));
+
+    // Слайдер отзывов
+    const track = document.querySelector('[data-slider-track]');
+    const prevBtn = document.querySelector('[data-slider-prev]');
+    const nextBtn = document.querySelector('[data-slider-next]');
+    const viewport = document.querySelector('.testimonials-viewport');
+    const dotsWrap = document.querySelector('[data-slider-dots]');
+
+    if (track && viewport && dotsWrap) {
+      const slides = Array.from(track.children);
+      let currentIndex = 0;
+      let autoplayId = null;
+
+      const getPerView = () => {
+        if (window.innerWidth <= 768) return 1;
+        if (window.innerWidth <= 1024) return 2;
+        return 3;
+      };
+
+      const getMaxIndex = () => {
+        const perView = getPerView();
+        return Math.max(0, slides.length - perView);
+      };
+
+      const renderDots = () => {
+        const pages = getMaxIndex() + 1;
+        dotsWrap.innerHTML = '';
+
+        for (let i = 0; i < pages; i++) {
+          const dot = document.createElement('button');
+          dot.type = 'button';
+          dot.className = 'testimonials-dot';
+          if (i === currentIndex) dot.classList.add('is-active');
+          dot.setAttribute('aria-label', `Перейти к группе отзывов ${i + 1}`);
+          dot.addEventListener('click', () => {
+            currentIndex = i;
+            updateSlider();
+            stopAutoplay();
+            startAutoplay();
+          });
+          dotsWrap.appendChild(dot);
+        }
+      };
+
+      const updateSlider = () => {
+        const firstSlide = slides[0];
+        if (!firstSlide) return;
+        const slideWidth = firstSlide.getBoundingClientRect().width + 16;
+        track.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+        renderDots();
+      };
+
+      const goNext = () => {
+        const maxIndex = getMaxIndex();
+        currentIndex = currentIndex >= maxIndex ? 0 : currentIndex + 1;
+        updateSlider();
+      };
+
+      const goPrev = () => {
+        const maxIndex = getMaxIndex();
+        currentIndex = currentIndex <= 0 ? maxIndex : currentIndex - 1;
+        updateSlider();
+      };
+
+      const startAutoplay = () => {
+        if (prefersReducedMotion) return;
+        stopAutoplay();
+        autoplayId = window.setInterval(goNext, 4500);
+      };
+
+      const stopAutoplay = () => {
+        if (autoplayId) {
+          window.clearInterval(autoplayId);
+          autoplayId = null;
+        }
+      };
+
+      nextBtn?.addEventListener('click', () => {
+        goNext();
+        stopAutoplay();
+        startAutoplay();
+      });
+
+      prevBtn?.addEventListener('click', () => {
+        goPrev();
+        stopAutoplay();
+        startAutoplay();
+      });
+
+      viewport.addEventListener('mouseenter', stopAutoplay);
+      viewport.addEventListener('mouseleave', startAutoplay);
+      viewport.addEventListener('focusin', stopAutoplay);
+      viewport.addEventListener('focusout', startAutoplay);
+
+      window.addEventListener('resize', () => {
+        currentIndex = 0;
+        updateSlider();
+      });
+
+      updateSlider();
+      startAutoplay();
+    }
+
+    // Модалка отзывов
+    const modal = document.getElementById('review-modal');
+    const openModalBtn = document.querySelector('[data-open-review-modal]');
+    const closeModalBtns = document.querySelectorAll('[data-close-review-modal]');
+    const reviewForm = document.getElementById('review-form');
+    const reviewSuccess = document.getElementById('review-success');
+    const reviewIntro = document.getElementById('review-modal-intro');
+
+    const openModal = () => {
+      if (!modal) return;
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    };
+
+    const closeModal = () => {
+      if (!modal) return;
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+
+      if (reviewForm && reviewSuccess) {
+        reviewForm.hidden = false;
+        reviewForm.reset();
+        reviewSuccess.hidden = true;
+      }
+
+      if (reviewIntro) {
+        reviewIntro.hidden = false;
+      }
+    };
+
+    openModalBtn?.addEventListener('click', openModal);
+    closeModalBtns.forEach((btn) => btn.addEventListener('click', closeModal));
+
+    modal?.addEventListener('click', (event) => {
+      if (event.target === modal) closeModal();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && modal?.getAttribute('aria-hidden') === 'false') {
+        closeModal();
+      }
+    });
+
+    // Сабмит формы отзывов
+    reviewForm?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!reviewForm || !reviewSuccess) return;
+
+      const submitButton = reviewForm.querySelector('button[type="submit"]');
+      const originalButtonText = submitButton?.textContent || 'Отправить отзыв';
+
+      const formData = new FormData(reviewForm);
+      const payload = {
+        name: String(formData.get('name') || '').trim(),
+        email: String(formData.get('email') || '').trim(),
+        role: String(formData.get('role') || '').trim(),
+        rating: Number(formData.get('rating') || 0),
+        message: String(formData.get('message') || '').trim(),
+        approve: formData.get('approve') === 'on',
+      };
+
+      try {
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.textContent = 'Отправляем...';
+        }
+
+        const response = await fetch('/api/reviews', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        let result: any = null;
+
+        try {
+          result = await response.json();
+        } catch {
+          result = null;
+        }
+
+        if (!response.ok) {
+          alert(result?.message || `Ошибка сервера: ${response.status}`);
+          return;
+        }
+
+        if (!result?.ok) {
+          alert(result?.message || 'Не удалось отправить отзыв.');
+          return;
+        }
+
+        reviewForm.reset();
+        reviewForm.hidden = true;
+
+        if (reviewIntro) {
+          reviewIntro.hidden = true;
+        }
+
+        reviewSuccess.hidden = false;
+      } catch (error) {
+        console.error('POST /api/reviews error:', error);
+        alert('Не удалось связаться с сервером. Проверьте /api/reviews и токен Sanity.');
+      } finally {
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = originalButtonText;
+        }
+      }
+    });
+  });
+</script>

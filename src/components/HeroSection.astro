@@ -1,0 +1,110 @@
+---
+// HeroSection.astro
+---
+
+<section class="hero section">
+  <div class="container hero__inner">
+    <div class="hero__content hero-animated">
+      <span class="eyebrow hero-eyebrow">Международное образовательное агентство</span>
+
+      <h1 class="hero__title hero-title">
+        <span class="hero-title-line" data-animate-line>
+          Поступление в университеты Беларуси
+        </span>
+        <span class="hero-title-line hero-title-line--accent" data-animate-line>
+          с BilimWay International
+        </span>
+      </h1>
+
+      <p class="hero__description hero-description" data-animate-line>
+        Помогаем иностранным абитуриентам выбрать университет, подготовить документы,
+        получить консультацию и пройти весь путь поступления спокойно и профессионально.
+      </p>
+
+      <div class="hero__actions" data-animate-line>
+        <button type="button" class="btn btn-secondary js-open-lead-modal">
+          Оставить заявку
+        </button>
+        <a href="#universities" class="btn btn-outline">Смотреть университеты</a>
+      </div>
+
+      <div class="hero__stats" data-animate-line>
+        <div class="hero-stat hero-stat--hover">
+          <strong>500+</strong>
+          <span>студентов</span>
+        </div>
+        <div class="hero-stat hero-stat--hover">
+          <strong>95%</strong>
+          <span>успешных зачислений</span>
+        </div>
+        <div class="hero-stat hero-stat--hover">
+          <strong>50+</strong>
+          <span>университетов</span>
+        </div>
+        <div class="hero-stat hero-stat--hover">
+          <strong>24/7</strong>
+          <span>поддержка</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero__visual hero-visual">
+      <div class="hero-visual-orbit" aria-hidden="true"></div>
+
+      <div class="hero-visual-card hero-visual-card--main">
+        <div class="hero-visual-badge">BilimWay</div>
+        <h3>Ваш путь к образованию в Беларуси</h3>
+        <p>От первой консультации до зачисления в университет.</p>
+
+        <div class="hero-visual-progress">
+          <div class="hero-visual-progress-label">
+            Путь поступления
+          </div>
+          <div class="hero-visual-progress-track">
+            <div class="hero-visual-progress-bar"></div>
+          </div>
+          <div class="hero-visual-progress-steps">
+            <span>Заявка</span>
+            <span>Документы</span>
+            <span>Приглашение</span>
+            <span>Зачисление</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual-stack">
+        <div class="hero-book hero-book--animated">
+          <div class="hero-book-cover">
+            <span class="hero-book-label">Belarus</span>
+            <span class="hero-book-title">University Guide</span>
+          </div>
+          <div class="hero-book-pages"></div>
+        </div>
+
+        <div class="hero-pen hero-pen--floating">
+          <div class="hero-pen-body"></div>
+          <div class="hero-pen-tip"></div>
+          <div class="hero-pen-shadow"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    const root = document.documentElement;
+    root.classList.add('js');
+
+    const lines = document.querySelectorAll('[data-animate-line]');
+    if (!lines.length) return;
+
+    lines.forEach((line, index) => {
+      line.style.setProperty('--hero-line-delay', (index * 0.12).toString() + 's');
+      line.classList.add('hero-line-hidden');
+      requestAnimationFrame(() => {
+        line.classList.add('hero-line-visible');
+      });
+    });
+  })();
+</script>

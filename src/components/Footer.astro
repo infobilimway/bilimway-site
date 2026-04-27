@@ -1,0 +1,109 @@
+---
+import { Image } from 'astro:assets';
+import logoImg from '../assets/image.png'; 
+
+const productLinks = [
+  { href: '/services', label: 'Услуги' },
+  { href: '/universities', label: 'Университеты' },
+  { href: '/posts', label: 'Посты' },
+  { href: '/#faq', label: 'FAQ' },
+];
+
+const companyLinks = [
+  { href: '/about', label: 'О нас' },
+  { href: '/posts', label: 'Новости' },
+  { href: '/contacts', label: 'Контакты' },
+  { href: '/services', label: 'Сотрудничество' },
+];
+
+const helpLinks = [
+  { href: '/services', label: 'Поступление в Беларусь' },
+  { href: '/universities', label: 'Подбор вуза' },
+  { href: '/contacts', label: 'Консультация' },
+  { href: '/about', label: 'Для родителей и школ' },
+];
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__top">
+      <a href="/" class="site-footer__brand" aria-label="BilimWay — Главная">
+        <Image
+          src={logoImg}
+          alt="BilimWay"
+          class="site-footer__logo"
+          width={164}
+          height={52}
+          quality="high"
+        />
+      </a>
+
+      <p class="site-footer__copyright">
+        BilimWay © 2026. Все права защищены.
+      </p>
+    </div>
+
+    <div class="site-footer__divider"></div>
+
+    <div class="site-footer__grid">
+      <div class="site-footer__column">
+        <h3>Навигация</h3>
+        <ul>
+          {productLinks.map((link) => (
+            <li><a href={link.href}>{link.label}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="site-footer__column">
+        <h3>Компания</h3>
+        <ul>
+          {companyLinks.map((link) => (
+            <li><a href={link.href}>{link.label}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="site-footer__column">
+        <h3>Помощь</h3>
+        <ul>
+          {helpLinks.map((link) => (
+            <li><a href={link.href}>{link.label}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="site-footer__column site-footer__column--contact">
+        <div class="site-footer__socials">
+          <a href="https://t.me/bilimway_study" target="_blank" rel="noopener noreferrer" aria-label="Telegram" class="site-footer__social">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </a>
+
+          <a href="https://instagram.com/bilimway.study" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="site-footer__social">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+            </svg>
+          </a>
+
+          <a href="https://www.tiktok.com/@bilimway.studyy" target="_blank" rel="noopener noreferrer" aria-label="TikTok" class="site-footer__social">
+            <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+              <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.24V2h-3.12v13.18a2.67 2.67 0 1 1-2.67-2.67c.23 0 .45.03.67.08V9.43a5.8 5.8 0 0 0-.67-.04A5.79 5.79 0 1 0 15.82 15V8.33a7.9 7.9 0 0 0 4.61 1.48V6.69h-.84z"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="site-footer__contact">
+          <p>+375 25 917 82 41</p>
+          <p>info.bilimway@gmail.com</p>
+          <p>г. Минск, ул. Городецкая, д. 64, пом. 1, каб. 9</p>
+          <p>г. Мары, на рынке “Гундогор”, расположенный на улице 19 Февраля в городе Мары</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

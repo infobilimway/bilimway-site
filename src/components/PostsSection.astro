@@ -1,0 +1,134 @@
+---
+interface Post {
+  _id: string;
+  title: string;
+  slug: string;
+  excerpt?: string;
+  publishedAt?: string;
+  coverImageUrl?: string;
+}
+
+const { posts = [] } = Astro.props;
+
+const formatDate = (date?: string) => {
+  if (!date) return "";
+  return new Intl.DateTimeFormat("ru-RU", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric"
+  }).format(new Date(date));
+};
+
+const featuredPost = posts[0];
+const secondaryPosts = posts.slice(1, 3);
+---
+
+<section class="posts-section section-space" id="posts">
+  <div class="container">
+    <div class="posts-head reveal">
+      <div class="posts-head__content">
+        <div class="eyebrow">Посты</div>
+        <h2 class="section-title">Полезные материалы для абитуриентов</h2>
+        <p class="section-text">
+          Публикуем статьи о поступлении, документах, обучении и жизни студентов в Беларуси.
+        </p>
+      </div>
+
+      <a href="/posts" class="btn btn-primary posts-head__action">
+        Все посты
+      </a>
+    </div>
+
+    {posts.length > 0 ? (
+      <div class="posts-editorial reveal">
+        {featuredPost && (
+          <article class="post-featured">
+            <a href={`/posts/${featuredPost.slug}`} class="post-featured__media">
+              {featuredPost.coverImageUrl ? (
+                <img
+                  src={featuredPost.coverImageUrl}
+                  alt={featuredPost.title}
+                  loading="lazy"
+                  width="960"
+                  height="640"
+                />
+              ) : (
+                <div class="post-featured__placeholder">BilimWay</div>
+              )}
+            </a>
+
+            <div class="post-featured__body">
+              <div class="post-meta">
+                <span class="post-meta__tag">Главный материал</span>
+                {featuredPost.publishedAt && (
+                  <time datetime={featuredPost.publishedAt}>
+                    {formatDate(featuredPost.publishedAt)}
+                  </time>
+                )}
+              </div>
+
+              <h3>
+                <a href={`/posts/${featuredPost.slug}`}>{featuredPost.title}</a>
+              </h3>
+
+              {featuredPost.excerpt && <p>{featuredPost.excerpt}</p>}
+
+              <a href={`/posts/${featuredPost.slug}`} class="post-link">
+                Читать статью
+                <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </article>
+        )}
+
+        <div class="post-stack">
+          {secondaryPosts.map((post, index) => (
+            <article class:list={["post-compact", index === 0 && "post-compact--accent"]}>
+              <a href={`/posts/${post.slug}`} class="post-compact__media">
+                {post.coverImageUrl ? (
+                  <img
+                    src={post.coverImageUrl}
+                    alt={post.title}
+                    loading="lazy"
+                    width="720"
+                    height="520"
+                  />
+                ) : (
+                  <div class="post-compact__placeholder">BilimWay</div>
+                )}
+              </a>
+
+              <div class="post-compact__body">
+                <div class="post-meta">
+                  <span class="post-meta__tag">Статья</span>
+                  {post.publishedAt && (
+                    <time datetime={post.publishedAt}>
+                      {formatDate(post.publishedAt)}
+                    </time>
+                  )}
+                </div>
+
+                <h3>
+                  <a href={`/posts/${post.slug}`}>{post.title}</a>
+                </h3>
+
+                {post.excerpt && <p>{post.excerpt}</p>}
+
+                <a href={`/posts/${post.slug}`} class="post-link">
+                  Читать
+                  <span aria-hidden="true">↗</span>
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    ) : (
+      <div class="posts-empty reveal">
+        Скоро здесь появятся полезные материалы о поступлении, документах и обучении в Беларуси.
+      </div>
+    )}
+  </div>
+</section>
+
+<link rel="stylesheet" href="/styles/posts-section.css" />

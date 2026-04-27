@@ -1,0 +1,121 @@
+---
+const faqs = [
+  {
+    question: "Нужно ли сдавать вступительные экзамены для поступления?",
+    answer:
+      "Для большинства иностранных абитуриентов поступление проходит по результатам рассмотрения документов и собеседования. В зависимости от университета и специальности требования могут отличаться, поэтому мы заранее подскажем точный формат."
+  },
+  {
+    question: "Можно ли учиться на английском языке?",
+    answer:
+      "Да, в Беларуси есть программы на английском языке, особенно по медицинским, техническим и экономическим направлениям. Если программа доступна только на русском, мы также подскажем варианты подготовительного отделения."
+  },
+  {
+    question: "Помогаете ли вы с общежитием и приглашением?",
+    answer:
+      "Да, мы сопровождаем поступление не только по документам, но и по организационным вопросам: помогаем с приглашением, подачей в университет и разъясняем процесс заселения в общежитие."
+  },
+  {
+    question: "Сколько времени занимает весь процесс поступления?",
+    answer:
+      "Срок зависит от страны абитуриента, готовности документов и дедлайнов конкретного университета. Обычно процесс занимает от нескольких недель до нескольких месяцев, поэтому лучше начинать заранее."
+  },
+  {
+    question: "Если я не знаю, какой университет выбрать, вы поможете?",
+    answer:
+      "Да, это одна из наших ключевых задач. Мы подбираем университет и программу с учётом бюджета, языка обучения, будущей профессии, города и личных целей абитуриента."
+  }
+];
+---
+
+<section class="faq-section section-space" id="faq">
+  <div class="container">
+    <div class="faq-layout">
+      <aside class="faq-aside reveal">
+        <div class="eyebrow">FAQ</div>
+        <h2 class="section-title">Частые вопросы</h2>
+        <p class="section-text">
+          Самые важные ответы о поступлении, документах, языке обучения и сопровождении.
+        </p>
+
+        <div class="faq-aside-card">
+          <span class="faq-aside-card__label">BilimWay</span>
+          <p>
+            Если не нашли нужный вопрос, вы можете оставить заявку и мы подскажем всё индивидуально.
+          </p>
+          <a href="/contacts" class="btn btn-primary">Задать вопрос</a>
+        </div>
+      </aside>
+
+      <div class="faq-board reveal">
+        {faqs.map((faq, index) => (
+          <article class="faq-card" data-faq-item>
+            <button
+              class="faq-card__trigger"
+              type="button"
+              aria-expanded={index === 0 ? "true" : "false"}
+              data-faq-trigger
+            >
+              <div class="faq-card__meta">
+                <span class="faq-card__index">{String(index + 1).padStart(2, "0")}</span>
+                <h3>{faq.question}</h3>
+              </div>
+
+              <span class="faq-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
+              </span>
+            </button>
+
+            <div
+              class:list={[
+                "faq-card__content-wrap",
+                index === 0 && "is-open"
+              ]}
+            >
+              <div class="faq-card__content">
+                <p>{faq.answer}</p>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const faqItems = document.querySelectorAll("[data-faq-item]");
+
+    faqItems.forEach((item, index) => {
+      if (index === 0) item.classList.add("is-open");
+
+      const trigger = item.querySelector("[data-faq-trigger]");
+      const contentWrap = item.querySelector(".faq-card__content-wrap");
+
+      trigger?.addEventListener("click", () => {
+        const isOpen = item.classList.contains("is-open");
+
+        faqItems.forEach((otherItem) => {
+          otherItem.classList.remove("is-open");
+          otherItem
+            .querySelector("[data-faq-trigger]")
+            ?.setAttribute("aria-expanded", "false");
+          otherItem
+            .querySelector(".faq-card__content-wrap")
+            ?.classList.remove("is-open");
+        });
+
+        if (!isOpen) {
+          item.classList.add("is-open");
+          trigger.setAttribute("aria-expanded", "true");
+          contentWrap?.classList.add("is-open");
+        }
+      });
+    });
+  });
+</script>
