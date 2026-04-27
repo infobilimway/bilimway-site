@@ -2,10 +2,15 @@
 import { defineConfig } from 'astro/config';
 import { loadEnv } from 'vite';
 import sanity from '@sanity/astro';
+import vercel from '@astrojs/vercel';
 
 const env = loadEnv(process.env.NODE_ENV || 'development', process.cwd(), '');
 
 export default defineConfig({
+  output: 'server',
+
+  adapter: vercel(),
+
   integrations: [
     sanity({
       projectId: env.PUBLIC_SANITY_PROJECT_ID,
