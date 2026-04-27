@@ -302,10 +302,13 @@ const universities = await sanityClient.fetch(query);
       }
     });
 
+    // ВОТ ЗДЕСЬ МЫ ВЕРНУЛИ АВТО-ОТКРЫТИЕ ЧЕРЕЗ 6 СЕКУНД
     setTimeout(function () {
       if (modal.hidden) {
+        openModal();
       }
-    }, 6000);
+    }, 6000); 
+    // Если захотите изменить время, меняйте цифру 6000 (1000 = 1 секунда)
 
     if (form) {
       form.addEventListener('submit', async function (event) {
