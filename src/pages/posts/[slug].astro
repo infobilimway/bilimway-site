@@ -8,38 +8,39 @@ import PortableTextContent from '../../components/PortableTextContent.astro';
 import { sanityClient } from 'sanity:client';
 import { urlFor } from '../../sanity/image';
 
-export async function getStaticPaths() {
-  const query = `*[_type == "post" && defined(slug.current)]{
-    _id,
-    title,
-    "slug": slug.current,
-    excerpt,
-    publishedAt,
-    coverImage{
-      ...,
-      asset->,
-      alt
-    },
-    content[]{
-      ...,
-      _type == "image" => {
-        ...,
-        asset->,
-        alt,
-        caption
-      }
-    }
-  }`;
+const { slug } = Astro.params;
 
-  const posts = await sanityClient.fetch(query);
-
-  return posts.map((post) => ({
-    params: { slug: post.slug },
-    props: { post },
-  }));
+if (!slug) {
+  return Astro.redirect('/404');
 }
 
-const { post } = Astro.props;
+const query = `*[_type == "post" && slug.current == $slug][0]{
+  _id,
+  title,
+  "slug": slug.current,
+  excerpt,
+  publishedAt,
+  coverImage{
+    ...,
+    asset->,
+    alt
+  },
+  content[]{
+    ...,
+    _type == "image" => {
+      ...,
+      asset->,
+      alt,
+      caption
+    }
+  }
+}`;
+
+const post = await sanityClient.fetch(query, { slug });
+
+if (!post) {
+  return Astro.redirect('/404');
+}
 
 const coverUrl = post?.coverImage?.asset
   ? urlFor(post.coverImage).width(1200).height(650).fit('crop').auto('format').url()

@@ -302,8 +302,10 @@
 }
 
 .site-logo__image {
-  height: 80px; 
+  display: block;
+  height: 58px;
   width: auto;
+  max-width: 100%;
   object-fit: contain;
 }
 
@@ -444,20 +446,22 @@
   .site-nav {
     display: none;
   }
+
   .site-header__actions .btn {
-    display: none; /* Скрываем кнопку в хедере на мобилках, она есть в меню */
+    display: none;
   }
+
   .burger {
     display: flex;
   }
 
   .site-logo__image {
-    height: 55px; /* Тот же размер, что был у старого квадрата с буквой B */
+    height: 44px;
     width: auto;
   }
 }
   /* ============================
-     БЛОК: Header и навигация — конец
+     БЛОК: Header и навигация — конец 
      ============================ */
   
   

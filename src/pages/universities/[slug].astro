@@ -8,36 +8,37 @@ import PortableTextContent from '../../components/PortableTextContent.astro';
 import { sanityClient } from 'sanity:client';
 import { urlFor } from '../../sanity/image';
 
-export async function getStaticPaths() {
-  const query = `*[_type == "university" && defined(slug.current)]{
-    _id,
-    name,
-    "slug": slug.current,
-    city,
-    country,
-    shortDescription,
-    tuitionFrom,
-    faculties,
-    publishedAt,
-    coverImage{
-      ...,
-      asset->,
-      alt
-    },
-    fullDescription[]{
-      ...
-    }
-  }`;
+const { slug } = Astro.params;
 
-  const universities = await sanityClient.fetch(query);
-
-  return universities.map((uni) => ({
-    params: { slug: uni.slug },
-    props: { uni },
-  }));
+if (!slug) {
+  return Astro.redirect('/404');
 }
 
-const { uni } = Astro.props;
+const query = `*[_type == "university" && slug.current == $slug][0]{
+  _id,
+  name,
+  "slug": slug.current,
+  city,
+  country,
+  shortDescription,
+  tuitionFrom,
+  faculties,
+  publishedAt,
+  coverImage{
+    ...,
+    asset->,
+    alt
+  },
+  fullDescription[]{
+    ...
+  }
+}`;
+
+const uni = await sanityClient.fetch(query, { slug });
+
+if (!uni) {
+  return Astro.redirect('/404');
+}
 
 const coverUrl = uni?.coverImage?.asset
   ? urlFor(uni.coverImage).width(1200).height(650).fit('crop').auto('format').url()
