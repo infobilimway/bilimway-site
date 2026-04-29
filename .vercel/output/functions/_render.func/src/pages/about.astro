@@ -1,0 +1,194 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import LeadModal from '../components/LeadModal.astro';
+
+import cert1 from '../assets/certificates/cert-1.jpg';
+import cert2 from '../assets/certificates/cert-2.jpg';
+import cert3 from '../assets/certificates/cert-3.jpg';
+import cert4 from '../assets/certificates/cert-4.jpg';
+import cert5 from '../assets/certificates/cert-5.jpg';
+
+const certificates = [
+  {
+    image: cert1,
+    title: 'Лицензия и официальная деятельность',
+    text: 'BilimWay работает официально и сопровождает абитуриентов по поступлению в университеты Беларуси на профессиональном уровне.',
+    meta: 'Официальный документ',
+  },
+  {
+    image: cert2,
+    title: 'Сертификат партнёрства',
+    text: 'Мы сотрудничаем с университетами и образовательными учреждениями, чтобы студенты получали надёжное сопровождение на каждом этапе.',
+    meta: 'Партнёрская аккредитация',
+  },
+  {
+    image: cert3,
+    title: 'Подтверждение экспертности',
+    text: 'Наш опыт подтверждён профильными документами и практикой работы с абитуриентами из разных стран.',
+    meta: 'Экспертный уровень',
+  },
+  {
+    image: cert4,
+    title: 'Международное сотрудничество',
+    text: 'BilimWay помогает выстроить путь от первой консультации до прибытия студента в Беларусь и адаптации на месте.',
+    meta: 'Международный формат',
+  },
+  {
+    image: cert5,
+    title: 'Доверие и репутация',
+    text: 'Сертификаты подтверждают качество нашей работы, открытость и серьёзный подход к сопровождению студентов и родителей.',
+    meta: 'Проверенное качество',
+  },
+];
+---
+
+<BaseLayout
+  title="О нас — BilimWay"
+  description="О компании BilimWay, наших сертификатах, опыте и официальной деятельности."
+>
+  <Header />
+
+  <main class="site-main">
+        <section class="about-intro">
+      <div class="container">
+        <div class="about-intro__wrap about-reveal">
+          <!-- ЛЕВАЯ КОЛОНКА — только заголовок и подзаголовок -->
+          <div class="about-intro__col about-intro__col--hero">
+            <div class="about-intro__hero-surface">
+              <span class="about-intro__eyebrow">О BilimWay</span>
+
+              <h1 class="about-intro__title">
+                Официальное сопровождение
+                <span>для поступления в&nbsp;Беларусь</span>
+              </h1>
+
+              <p class="about-intro__subtitle">
+                Мы берём на себя путь от первой консультации до заселения в общежитие,
+                чтобы поступление в белорусский университет было понятным и спокойным.
+              </p>
+            </div>
+          </div>
+
+          <!-- ПРАВАЯ КОЛОНКА — информация о компании и адрес -->
+          <div class="about-intro__col about-intro__col--info">
+            <div class="about-intro__info-card">
+              <p class="about-intro__text">
+                BilimWay — образовательная компания, которая помогает абитуриентам из разных стран поступать
+                в государственные университеты Беларуси. Мы работаем официально и выстраиваем сотрудничество
+                напрямую с вузами.
+              </p>
+
+              <p class="about-intro__text">
+                Мы консультируем по выбору университета и специальности, объясняем требования, готовим план
+                поступления, сопровождаем в оформлении документов и получении приглашения на обучение.
+              </p>
+
+              <p class="about-intro__text">
+                После зачисления помогаем с визой, поездкой, заселением и первыми шагами в Беларуси, чтобы у
+                студента с самого начала был надёжный ориентир.
+              </p>
+
+              <div class="about-intro__info-meta">
+                <div class="about-intro__meta-block">
+                  <span class="about-intro__meta-label">Головной офис</span>
+                  <p class="about-intro__meta-text">
+                    Беларусь, г. Минск<br />
+                    ул. Городецкая, д. 64, пом. 1, кабинет 9
+                  </p>
+                </div>
+
+                <div class="about-intro__meta-block">
+                  <span class="about-intro__meta-label">Офис в Туркменистане</span>
+                  <p class="about-intro__meta-text">
+                    г. Мары, рынок «Гундогор»<br />
+                    улица 19 Февраля
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="about-certs">
+      <div class="container">
+        <div class="about-certs__list">
+          {certificates.map((item, index) => (
+            <article
+              class={`about-cert about-reveal ${index % 2 !== 0 ? 'about-cert--reverse' : ''}`}
+              style={`--reveal-delay:${index * 0.08}s;`}
+            >
+              <div class="about-cert__media">
+                <div class="about-cert__frame">
+                  <div class="about-cert__glow"></div>
+                  <img
+                    src={item.image.src}
+                    alt={item.title}
+                    width={item.image.width}
+                    height={item.image.height}
+                    loading="lazy"
+                    decoding="async"
+                    class="about-cert__image"
+                  />
+                </div>
+              </div>
+
+              <div class="about-cert__content">
+                <span class="about-cert__meta">{item.meta}</span>
+                <h2 class="about-cert__title">{item.title}</h2>
+                <p class="about-cert__text">{item.text}</p>
+
+                <div class="about-cert__line">
+                  <span></span>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="about-cta about-reveal">
+      <div class="container">
+        <div class="about-cta__box">
+          <div class="about-cta__glow" aria-hidden="true"></div>
+          <div class="about-cta__content">
+            <h2>Готовы начать поступление вместе с BilimWay?</h2>
+            <p>
+              Оставьте заявку, и мы бесплатно подскажем, какой университет подойдёт именно вам,
+              какие документы нужны и с чего лучше начать.
+            </p>
+            <button class="btn btn-primary js-open-lead-modal" type="button">
+              Оставить заявку
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+  <LeadModal />
+
+  <script>
+    document.documentElement.classList.add('js');
+
+    const revealItems = document.querySelectorAll('.about-reveal');
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+    );
+
+    revealItems.forEach((item) => observer.observe(item));
+  </script>
+</BaseLayout>

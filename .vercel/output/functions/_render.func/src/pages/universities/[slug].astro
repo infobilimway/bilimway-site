@@ -1,0 +1,179 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import LeadModal from '../../components/LeadModal.astro';
+import PortableTextContent from '../../components/PortableTextContent.astro';
+
+import { sanityClient } from 'sanity:client';
+import { urlFor } from '../../sanity/image';
+
+const { slug } = Astro.params;
+
+if (!slug) {
+  return Astro.redirect('/404');
+}
+
+const query = `*[_type == "university" && slug.current == $slug][0]{
+  _id,
+  name,
+  "slug": slug.current,
+  city,
+  country,
+  shortDescription,
+  tuitionFrom,
+  faculties,
+  publishedAt,
+  coverImage{
+    ...,
+    asset->,
+    alt
+  },
+  fullDescription[]{
+    ...
+  }
+}`;
+
+const uni = await sanityClient.fetch(query, { slug });
+
+if (!uni) {
+  return Astro.redirect('/404');
+}
+
+const coverUrl = uni?.coverImage?.asset
+  ? urlFor(uni.coverImage).width(1200).height(650).fit('crop').auto('format').url()
+  : null;
+
+const coverAlt = uni?.coverImage?.alt || uni?.name || '';
+const hasFullDescription =
+  Array.isArray(uni?.fullDescription) && uni.fullDescription.length > 0;
+---
+
+<BaseLayout
+  title={`${uni.name} — Поступление с BilimWay`}
+  description={uni.shortDescription || `Узнайте всё о поступлении в ${uni.name}.`}
+>
+  <Header />
+
+  <main class="site-main uni-single">
+    <div class="container">
+      <header class="uni-single__header">
+        <div class="uni-single__breadcrumbs">
+          <a href="/">Главная</a>
+          <span class="sep">/</span>
+          <a href="/universities">Университеты</a>
+          <span class="sep">/</span>
+          <span class="current">{uni.name}</span>
+        </div>
+
+        <div class="uni-single__title-wrap">
+          <h1 class="uni-single__title">{uni.name}</h1>
+        </div>
+      </header>
+
+      <div class="uni-single__layout">
+        <article class="uni-single__content">
+          {coverUrl && (
+            <div class="uni-single__cover">
+              <img src={coverUrl} alt={coverAlt} loading="eager" />
+            </div>
+          )}
+
+          <div class="uni-single__prose">
+            {uni.shortDescription && (
+              <p class="uni-single__lead">
+                <strong>{uni.shortDescription}</strong>
+              </p>
+            )}
+
+            <div class="post-body prose">
+              {hasFullDescription ? (
+                <PortableTextContent value={uni.fullDescription} />
+              ) : (
+                <p>Полное описание университета пока не добавлено.</p>
+              )}
+            </div>
+
+            {uni.faculties && uni.faculties.length > 0 && (
+              <>
+                <h2>Факультеты и направления</h2>
+                <div class="uni-single__faculties">
+                  {uni.faculties.map((fac) => (
+                    <div class="uni-single__faculty-card">
+                      <div class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                          <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                        </svg>
+                      </div>
+                      <span>{fac}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        </article>
+
+        <aside class="uni-single__sidebar">
+          <div class="uni-single__widget">
+            <div class="uni-single__widget-head">
+              <h3>{uni.name}</h3>
+              <p>Краткая информация о поступлении</p>
+            </div>
+
+            <ul class="uni-single__facts">
+              {uni.city && (
+                <li>
+                  <span class="label">Город</span>
+                  <span class="value">{uni.city}</span>
+                </li>
+              )}
+              {uni.country && (
+                <li>
+                  <span class="label">Страна</span>
+                  <span class="value">{uni.country}</span>
+                </li>
+              )}
+              {uni.tuitionFrom && (
+                <li>
+                  <span class="label">Стоимость</span>
+                  <span class="value">{uni.tuitionFrom}</span>
+                </li>
+              )}
+            </ul>
+
+            <div class="uni-single__widget-action">
+              <button class="btn btn-primary btn-block js-open-lead-modal" type="button">
+                Хочу поступить сюда
+              </button>
+              <p class="note">
+                Оставьте заявку, и мы расскажем, какие документы нужны и когда лучше подавать в этот вуз.
+              </p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <section class="uni-cta">
+      <div class="container">
+        <div class="uni-cta__box">
+          <div class="uni-cta__glow" aria-hidden="true"></div>
+          <div class="uni-cta__content">
+            <h2>Хотите учиться в этом университете?</h2>
+            <p>
+              Мы поможем подготовить документы, подать заявку и организовать поступление в Беларусь.
+            </p>
+            <button class="btn btn-primary js-open-lead-modal" type="button">
+              Оставить заявку
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+  <LeadModal />
+</BaseLayout>
