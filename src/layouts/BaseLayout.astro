@@ -1,21 +1,21 @@
 ---
-import '../styles/global.css'; 
+import '../styles/global.css';
 
 interface Props {
   title?: string;
   description?: string;
-  image?: string; // <-- ДОБАВЛЕНО СВОЙСТВО IMAGE
+  image?: string;
 }
 
 const {
   title = 'BilimWay International — Обучение за рубежом',
   description = 'Помощь иностранным абитуриентам в поступлении в университеты Беларуси и лучшие вузы мира. Полное сопровождение, визовая поддержка и подбор программ.',
-  image = '/og-image.jpg' // <-- ВАШ ПУТЬ К КАРТИНКЕ (лежит в public/og-image.jpg)
+  image = '/og-image.jpg'
 } = Astro.props;
 
-// Автоматически формируем полные URL для SEO
-const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://www.bilimway.study');
-const socialImageURL = new URL(image, Astro.site || 'https://www.bilimway.study');
+const siteUrl = 'https://www.bilimway.study';
+const canonicalURL = `${siteUrl}${Astro.url.pathname}`;
+const socialImageURL = image.startsWith('http') ? image : `${siteUrl}${image}`;
 ---
 
 <!doctype html>
@@ -23,12 +23,14 @@ const socialImageURL = new URL(image, Astro.site || 'https://www.bilimway.study'
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonicalURL} />
+    } />
+
     <meta name="google-site-verification" content="ba-vBprJ2YjDpnVL4-GkdaHdrW9TQijBfIu-N590yNQ" />
 
-    <!-- Open Graph / Facebook / Telegram / WhatsApp -->
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
@@ -45,11 +47,11 @@ const socialImageURL = new URL(image, Astro.site || 'https://www.bilimway.study'
     <meta name="twitter:image" content={socialImageURL} />
 
     <!-- Favicon & Fonts -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+    /svg+xml" href="/favicon.svg" " />
+
+    //fonts.googleapis.com" />
+    //fonts.gstatic.com" crossorigin />
+    //fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
 
