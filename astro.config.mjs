@@ -3,7 +3,6 @@ import { defineConfig } from 'astro/config';
 import { loadEnv } from 'vite';
 import sanity from '@sanity/astro';
 import vercel from '@astrojs/vercel';
-import sitemap from '@astrojs/sitemap';
 
 const env = loadEnv(process.env.NODE_ENV || 'development', process.cwd(), '');
 
@@ -18,6 +17,5 @@ export default defineConfig({
       apiVersion: env.SANITY_API_VERSION || '2026-03-01',
       useCdn: false,
     }),
-    sitemap(),
   ],
 });

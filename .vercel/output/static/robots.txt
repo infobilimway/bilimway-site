@@ -1,8 +1,0 @@
-# BilimWay International - Robots.txt
-# Allow all search engines to crawl and index the site
-
-User-agent: *
-Allow: /
-
-# Sitemap location
-Sitemap: https://www.bilimway.study/sitemap-index.xml
