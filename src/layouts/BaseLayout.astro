@@ -4,18 +4,12 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
-  image?: string;
 }
 
 const {
-  title = 'BilimWay International — Обучение за рубежом',
-  description = 'Помощь иностранным абитуриентам в поступлении в университеты Беларуси и лучшие вузы мира. Полное сопровождение, визовая поддержка и подбор программ.',
-  image = '/og-image.jpg'
+  title = 'BilimWay International',
+  description = 'Помощь иностранным абитуриентам в поступлении в университеты Беларуси.',
 } = Astro.props;
-
-const siteUrl = 'https://www.bilimway.study';
-const canonicalURL = `${siteUrl}${Astro.url.pathname}`;
-const socialImageURL = image.startsWith('http') ? image : `${siteUrl}${image}`;
 ---
 
 <!doctype html>
@@ -23,35 +17,34 @@ const socialImageURL = image.startsWith('http') ? image : `${siteUrl}${image}`;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <title>{title}</title>
     <meta name="description" content={description} />
-    } />
 
+    <link rel="canonical" href="https://www.bilimway.study/" />
     <meta name="google-site-verification" content="ba-vBprJ2YjDpnVL4-GkdaHdrW9TQijBfIu-N590yNQ" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content={canonicalURL} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:image" content={socialImageURL} />
+    <meta property="og:url" content="https://www.bilimway.study/" />
+    <meta property="og:title" content="BilimWay International — Обучение за рубежом" />
+    <meta property="og:description" content="Помощь иностранным абитуриентам в поступлении в университеты Беларуси и лучшие вузы мира. Полное сопровождение, визовая поддержка и подбор программ." />
+    <meta property="og:image" content="https://www.bilimway.study/og-image.jpg" />
     <meta property="og:site_name" content="BilimWay International" />
     <meta property="og:locale" content="ru_RU" />
 
     <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content={canonicalURL} />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={socialImageURL} />
+    <meta name="twitter:url" content="https://www.bilimway.study/" />
+    <meta name="twitter:title" content="BilimWay International — Обучение за рубежом" />
+    <meta name="twitter:description" content="Помощь иностранным абитуриентам в поступлении в университеты Беларуси и лучшие вузы мира. Полное сопровождение, визовая поддержка и подбор программ." />
+    <meta name="twitter:image" content="https://www.bilimway.study/og-image.jpg" />
 
-    <!-- Favicon & Fonts -->
-    /svg+xml" href="/favicon.svg" " />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-    //fonts.googleapis.com" />
-    //fonts.gstatic.com" crossorigin />
-    //fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
 
