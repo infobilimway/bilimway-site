@@ -5182,8 +5182,8 @@
   position: relative;
   background: #ffffff;
   border-radius: 28px;
-  border: 1px solid rgba(10,79,179, 0.08);
-  box-shadow: 0 10px 40px rgba(10,79,179, 0.04);
+  border: 1px solid rgba(10, 79, 179, 0.08);
+  box-shadow: 0 10px 40px rgba(10, 79, 179, 0.04);
   overflow: hidden;
   transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
   /* Переменные для слежения за мышью (задаются в JS) */
@@ -5193,8 +5193,8 @@
 
 .serv-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 50px rgba(10,79,179, 0.12);
-  border-color: rgba(10,79,179, 0.2);
+  box-shadow: 0 20px 50px rgba(10, 79, 179, 0.12);
+  border-color: rgba(10, 79, 179, 0.2);
 }
 
 /* Эффект фонарика (Spotlight) при наведении */
@@ -5203,7 +5203,7 @@
   inset: 0;
   background: radial-gradient(
     600px circle at var(--mouse-x) var(--mouse-y), 
-    rgba(10,79,179, 0.06), 
+    rgba(10, 79, 179, 0.06), 
     transparent 40%
   );
   opacity: 0;
@@ -5216,6 +5216,7 @@
   opacity: 1;
 }
 
+/* Внутренний контейнер карточки */
 .serv-card__inner {
   position: relative;
   z-index: 2;
@@ -5262,11 +5263,13 @@
   margin-bottom: 12px;
 }
 
+/* Описание карточки: заставляем его растягиваться */
 .serv-card__desc {
   font-size: 15px;
   color: #64748b;
   margin-bottom: 24px;
   line-height: 1.6;
+  flex-grow: 1; /* ДОБАВЛЕНО: Выталкивает всё, что ниже (Подробнее и кнопку), в самый низ */
 }
 
 .serv-card__price-box {
@@ -5282,11 +5285,12 @@
   letter-spacing: -0.02em;
 }
 
+/* Списки с галочками (если есть) */
 .serv-card__feats {
   list-style: none;
   padding: 0;
   margin: 0 0 32px;
-  flex-grow: 1;
+  /* Убрал flex-grow: 1 отсюда, чтобы растягивался текст, а не пустой список, если его нет */
 }
 
 .serv-card__feats li {
@@ -5317,10 +5321,12 @@
   color: var(--color-accent-dark);
 }
 
+/* Кнопка */
 .serv-card__btn {
   width: 100%;
   justify-content: center;
   padding: 14px;
+  margin-top: 16px; /* ДОБАВЛЕНО: небольшой отступ от ссылки "Подробнее" сверху */
 }
 
 .serv-card--popular .serv-card__btn {
@@ -5328,11 +5334,10 @@
   color: #fff;
   border-color: var(--color-primary);
 }
+
 .serv-card--popular .serv-card__btn:hover {
   background: var(--color-primary-dark);
 }
-
-
 /* --- ПРОЦЕСС РАБОТЫ (АНИМИРОВАННЫЙ ТАЙМЛАЙН) --- */
 .serv-process {
   padding: 100px 0;
